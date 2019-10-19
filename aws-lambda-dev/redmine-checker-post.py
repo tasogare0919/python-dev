@@ -1,17 +1,31 @@
 # -*- coding:utf-8 -*-
 import random
-import requests
+import os
 import json
+import urllib.request
 
-user_list = ["U0KTQF99R","UGSEMJ9EK","UHD6KN35F"]
-counter = random.randint(0,2)
-print(user_list[counter])
+def lambda_handler(event, context):
+    post_slack()
+    return "End"
 
-WEB_HOOK_URL = "https://hooks.slack.com/services/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"
-requests.post(WEB_HOOK_URL, data = json.dumps({
-    'text': '今日のRedmineチェッカー当番は<@' + user_list[counter] + '>です',
-    'username': 'Redmine-Checker',
-    'channel': '#prj-famima-sp2-ops',
-    'icon_emoji': ':famipay:'
-}))
+def post_slack():
+    user_list = ["USERID"]
+    counter = random.randint(0, 2)
+    method = "POST"
 
+    send_data = {
+        'username': 'UserName',
+        'channel': '#Channel',
+        'icon_emoji': 'emojiicon',
+        'text': '今日の当番は<@' + user_list[counter] + '>です',
+    }
+
+    send_text = ("payload=" + json.dumps(send_data)).encode('utf-8')
+
+    request = urllib.request.Request(
+        os.environ["WEB_HOOK_URL"],
+        data=send_text,
+        method=method
+    )
+    with urllib.request.urlopen(request) as response:
+        response_body = response.read().decode('utf-8')
